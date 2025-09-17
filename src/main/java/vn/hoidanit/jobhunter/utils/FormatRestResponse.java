@@ -34,6 +34,7 @@ public class FormatRestResponse implements ResponseBodyAdvice<Object> {
         RestResponse<Object> res = new RestResponse<Object>();
         res.setStatusCode(status);
 
+        // In case of casting data fail, from Object to String
         if (body instanceof String) {
             return body;
         }
