@@ -21,6 +21,9 @@ public class UserDetailsCustom implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         vn.hoidanit.jobhunter.domain.User user = this.userService.getByUsername(username);
+        if (user == null) {
+            throw new UsernameNotFoundException("Tài khoản không tồn tại");
+        }
         return new User(
                 user.getEmail(),
                 user.getPassword(),

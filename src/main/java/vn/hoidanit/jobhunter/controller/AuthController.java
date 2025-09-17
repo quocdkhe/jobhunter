@@ -42,6 +42,7 @@ public class AuthController {
         String accessToken = this.securityUtils.createToken(authentication);
         ResLoginDTO resLoginDTO = new ResLoginDTO();
         resLoginDTO.setAccessToken(accessToken);
+        // Ném token về phía client
         return ResponseEntity.ok().body(resLoginDTO);
     }
 }
