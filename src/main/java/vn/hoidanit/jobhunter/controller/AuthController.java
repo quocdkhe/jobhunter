@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import jakarta.validation.Valid;
-import vn.hoidanit.jobhunter.domain.LoginDTO;
-import vn.hoidanit.jobhunter.domain.ResLoginDTO;
+import vn.hoidanit.jobhunter.domain.dto.LoginDTO;
+import vn.hoidanit.jobhunter.domain.dto.ResLoginDTO;
 import vn.hoidanit.jobhunter.utils.SecurityUtils;
 
 @Controller
