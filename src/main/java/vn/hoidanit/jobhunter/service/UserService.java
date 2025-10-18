@@ -24,24 +24,25 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public User createUpdateUser(User user) {
-        String encodedPassword = passwordEncoder.encode(user.getPassword());
-        user.setPassword(encodedPassword);
+    public User createUser(User user) {
         return this.userRepository.save(user);
     }
 
-    // public List<User> getAllUsers(Pageable pageable) {
-    // Page<User> usersPagable = userRepository.findAll(pageable);
-    // return usersPagable.getContent();
-    // }
+    public User updateUser(User user) {
+        if (user.getPassword() != null && !user.getPassword().isEmpty()) {
+            String encodedPassword = passwordEncoder.encode(user.getPassword());
+            user.setPassword(encodedPassword);
+        }
+        return this.userRepository.save(user);
+    }
 
     public ResultPaginationDTO getAllUsers(Pageable pageable, Specification<User> userSpec) {
         Page<User> usersPagable = userRepository.findAll(userSpec, pageable);
         ResultPaginationDTO result = new ResultPaginationDTO();
         Meta meta = new Meta();
 
-        meta.setPage(usersPagable.getNumber() + 1); // current Page
-        meta.setPageSize(usersPagable.getSize()); // element per page
+        meta.setPage(pageable.getPageNumber() + 1); // current Page
+        meta.setPageSize(pageable.getPageSize()); // element per page
 
         meta.setPages(usersPagable.getTotalPages()); // get tottal page
         meta.setTotal(usersPagable.getTotalElements()); // total element

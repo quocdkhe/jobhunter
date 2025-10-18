@@ -13,8 +13,11 @@ import org.springframework.stereotype.Controller;
 import vn.hoidanit.jobhunter.domain.Company;
 import vn.hoidanit.jobhunter.domain.dto.ResultPaginationDTO;
 import vn.hoidanit.jobhunter.service.CompanyService;
+import vn.hoidanit.jobhunter.utils.annotation.ApiMessage;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.turkraft.springfilter.boot.Filter;
@@ -27,6 +30,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 
 @Controller
+@RequestMapping("/api/v1")
 public class CompanyController {
     private final CompanyService companyService;
 
@@ -35,12 +39,14 @@ public class CompanyController {
     }
 
     @PostMapping("/companies")
+    @ApiMessage("Create new company")
     public ResponseEntity<Company> createNewCompany(@RequestBody @Valid Company company) {
         Company newCompany = this.companyService.handleSaveCompany(company);
         return ResponseEntity.status(HttpStatus.CREATED).body(newCompany);
     }
 
     @GetMapping("/companies")
+    @ApiMessage("Get all company")
     public ResponseEntity<ResultPaginationDTO> getAllCompany(
             Pageable pageable,
             @Filter Specification<Company> companySpec) {
@@ -48,11 +54,13 @@ public class CompanyController {
     }
 
     @PutMapping("/companies")
+    @ApiMessage("Update a company")
     public ResponseEntity<Company> updateCompany(@RequestBody @Valid Company company) {
         return ResponseEntity.ok().body(companyService.updateCompany(company));
     }
 
     @DeleteMapping("/companies/{id}")
+    @ApiMessage("Delete a company")
     public ResponseEntity<Void> deleteCompany(@PathVariable long id) {
         companyService.deleteCompany(id);
         return ResponseEntity.ok(null); // 204 No Content
