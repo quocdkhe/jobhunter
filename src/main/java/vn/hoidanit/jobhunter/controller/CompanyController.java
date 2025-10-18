@@ -1,15 +1,27 @@
 package vn.hoidanit.jobhunter.controller;
 
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
 import vn.hoidanit.jobhunter.domain.Company;
+import vn.hoidanit.jobhunter.domain.dto.ResultPaginationDTO;
 import vn.hoidanit.jobhunter.service.CompanyService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import jakarta.validation.Valid;
+
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 
 @Controller
 public class CompanyController {
@@ -23,6 +35,31 @@ public class CompanyController {
     public ResponseEntity<Company> createNewCompany(@RequestBody @Valid Company company) {
         Company newCompany = this.companyService.handleSaveCompany(company);
         return ResponseEntity.status(HttpStatus.CREATED).body(newCompany);
+    }
+
+    @GetMapping("/companies")
+    public ResponseEntity<ResultPaginationDTO> getAllCompany(
+            @RequestParam("current") Optional<String> currentOptional,
+            @RequestParam("pageSize") Optional<String> pageSizeOptional) {
+        String currentString = currentOptional.isPresent() ? currentOptional.get() : "";
+        String pageSizeString = pageSizeOptional.isPresent() ? pageSizeOptional.get() : "";
+
+        int current = Integer.parseInt(currentString);
+        int pageSize = Integer.parseInt(pageSizeString);
+
+        Pageable pageable = PageRequest.of(current - 1, pageSize);
+        return ResponseEntity.ok().body(companyService.getAllCompaniesPageable(pageable));
+    }
+
+    @PutMapping("/companies")
+    public ResponseEntity<Company> updateCompany(@RequestBody @Valid Company company) {
+        return ResponseEntity.ok().body(companyService.updateCompany(company));
+    }
+
+    @DeleteMapping("/companies/{id}")
+    public ResponseEntity<Void> deleteCompany(@PathVariable long id) {
+        companyService.deleteCompany(id);
+        return ResponseEntity.ok(null); // 204 No Content
     }
 
 }
