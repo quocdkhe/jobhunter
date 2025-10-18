@@ -44,4 +44,14 @@ public class GlobalException {
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
+
+    @ExceptionHandler(EmailExistException.class)
+    public ResponseEntity<RestResponse<Object>> emailExistExceptionHandler(EmailExistException exception) {
+        RestResponse<Object> response = new RestResponse<Object>();
+        response.setStatusCode(HttpStatus.BAD_REQUEST.value());
+        response.setError(exception.getMessage());
+        response.setMessage("Email đã tồn tại, vui lòng nhập email khác");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
 }

@@ -6,8 +6,10 @@ import com.turkraft.springfilter.boot.Filter;
 
 import vn.hoidanit.jobhunter.domain.User;
 import vn.hoidanit.jobhunter.domain.dto.ResultPaginationDTO;
+import vn.hoidanit.jobhunter.domain.dto.UserInfoDTO;
 import vn.hoidanit.jobhunter.service.UserService;
 import vn.hoidanit.jobhunter.utils.annotation.ApiMessage;
+import vn.hoidanit.jobhunter.utils.error.EmailExistException;
 
 import java.util.List;
 import java.util.Optional;
@@ -51,7 +53,7 @@ public class UserController {
 
     @PostMapping("/users")
     @ApiMessage("Create new user")
-    public ResponseEntity<User> createUser(@RequestBody User user) {
+    public ResponseEntity<UserInfoDTO> createUser(@RequestBody User user) throws EmailExistException {
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.createUser(user));
     }
 

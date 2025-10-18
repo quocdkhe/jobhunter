@@ -11,7 +11,9 @@ import org.springframework.stereotype.Service;
 import vn.hoidanit.jobhunter.domain.User;
 import vn.hoidanit.jobhunter.domain.dto.Meta;
 import vn.hoidanit.jobhunter.domain.dto.ResultPaginationDTO;
+import vn.hoidanit.jobhunter.domain.dto.UserInfoDTO;
 import vn.hoidanit.jobhunter.repository.UserRepository;
+import vn.hoidanit.jobhunter.utils.error.EmailExistException;
 
 @Service
 public class UserService {
@@ -24,8 +26,14 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public User createUser(User user) {
-        return this.userRepository.save(user);
+    public UserInfoDTO createUser(User user) throws EmailExistException {
+        if (this.userRepository.existsByEmail(user.getEmail())) {
+            throw new EmailExistException();
+        }
+        User newUser = this.userRepository.save(user);
+        return new UserInfoDTO(newUser.getId(), newUser.getName(), newUser.getEmail(), newUser.getGender(),
+                newUser.getAddress(),
+                newUser.getAge(), newUser.getCreatedAt());
     }
 
     public User updateUser(User user) {
