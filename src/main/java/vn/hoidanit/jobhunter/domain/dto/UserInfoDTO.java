@@ -6,11 +6,11 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import vn.hoidanit.jobhunter.domain.User;
 import vn.hoidanit.jobhunter.utils.constant.GenderEnum;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
 public class UserInfoDTO {
     private long id;
@@ -21,5 +21,16 @@ public class UserInfoDTO {
     private int age;
     private Instant createdAt;
     private Instant updatedAt;
+
+    public UserInfoDTO(User user) {
+        this.id = user.getId();
+        this.name = user.getName();
+        this.email = user.getEmail();
+        this.gender = user.getGender();
+        this.address = user.getAddress();
+        this.age = user.getAge();
+        this.createdAt = user.getCreatedAt();
+        this.updatedAt = user.getUpdatedAt();
+    }
 
 }

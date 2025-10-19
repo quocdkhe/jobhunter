@@ -35,9 +35,7 @@ public class UserService {
             throw new EmailExistException();
         }
         User newUser = this.userRepository.save(user);
-        return new UserInfoDTO(newUser.getId(), newUser.getName(), newUser.getEmail(), newUser.getGender(),
-                newUser.getAddress(),
-                newUser.getAge(), newUser.getCreatedAt(), newUser.getUpdatedAt());
+        return new UserInfoDTO(newUser);
     }
 
     public UserInfoDTO updateUser(User user) throws NoResourceFoundException {
@@ -57,9 +55,7 @@ public class UserService {
         currentUser.setGender(user.getGender());
 
         User updatedUser = this.userRepository.save(currentUser);
-        return new UserInfoDTO(
-                updatedUser.getId(), updatedUser.getName(), updatedUser.getEmail(), updatedUser.getGender(),
-                updatedUser.getAddress(), updatedUser.getAge(), updatedUser.getCreatedAt(), updatedUser.getUpdatedAt());
+        return new UserInfoDTO(updatedUser);
     }
 
     public ResultPaginationDTO<List<UserInfoDTO>> getAllUsers(Pageable pageable, Specification<User> userSpec) {
@@ -76,9 +72,7 @@ public class UserService {
         result.setMeta(meta);
 
         List<UserInfoDTO> userInfos = usersPagable.getContent().stream()
-                .map(current -> new UserInfoDTO(current.getId(), current.getName(), current.getEmail(),
-                        current.getGender(),
-                        current.getAddress(), current.getAge(), current.getCreatedAt(), current.getUpdatedAt()))
+                .map(user -> new UserInfoDTO(user))
                 .collect(Collectors.toList());
         result.setResult(userInfos);
         return result;
@@ -90,9 +84,7 @@ public class UserService {
             throw new NoResourceFoundException(HttpMethod.GET, "user with id: " + id);
         }
         User current = userOptional.get();
-        return new UserInfoDTO(
-                current.getId(), current.getName(), current.getEmail(), current.getGender(),
-                current.getAddress(), current.getAge(), current.getCreatedAt(), current.getUpdatedAt());
+        return new UserInfoDTO(current);
     }
 
     public boolean checkUserById(long id) {
@@ -101,6 +93,10 @@ public class UserService {
 
     public User getByUsername(String username) {
         return this.userRepository.findByEmail(username);
+    }
+
+    public void deleteUser(long id) {
+
     }
 
 }
