@@ -58,8 +58,9 @@ public class UserController {
 
     @DeleteMapping("/users/{id}")
     @ApiMessage("Delete a user")
-    public ResponseEntity<Void> deleteUser(@PathVariable("id") long id) {
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<Void> deleteUser(@PathVariable("id") long id) throws NoResourceFoundException {
+        this.userService.deleteUser(id);
+        return ResponseEntity.ok().body(null);
     }
 
     @PutMapping("/users")

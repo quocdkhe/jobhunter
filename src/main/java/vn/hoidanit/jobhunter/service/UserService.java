@@ -87,16 +87,15 @@ public class UserService {
         return new UserInfoDTO(current);
     }
 
-    public boolean checkUserById(long id) {
-        return this.userRepository.existsById(id);
-    }
-
     public User getByUsername(String username) {
         return this.userRepository.findByEmail(username);
     }
 
-    public void deleteUser(long id) {
-
+    public void deleteUser(long id) throws NoResourceFoundException {
+        if (!userRepository.existsById(id)) {
+            throw new NoResourceFoundException(HttpMethod.GET, "user with id: " + id);
+        }
+        userRepository.deleteById(id);
     }
 
 }
