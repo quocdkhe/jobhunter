@@ -2,12 +2,16 @@ package vn.hoidanit.jobhunter.domain.dto;
 
 import java.time.Instant;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import vn.hoidanit.jobhunter.utils.constant.GenderEnum;
 
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class UserInfoDTO {
     private long id;
     private String name;
@@ -16,19 +20,6 @@ public class UserInfoDTO {
     private String address;
     private int age;
     private Instant createdAt;
-
-    public UserInfoDTO() {
-    }
-
-    public UserInfoDTO(long id, String name, String email, GenderEnum gender, String address, int age,
-            Instant createdAt) {
-        this.id = id;
-        this.name = name;
-        this.email = email;
-        this.gender = gender;
-        this.address = address;
-        this.age = age;
-        this.createdAt = createdAt;
-    }
+    private Instant updatedAt;
 
 }

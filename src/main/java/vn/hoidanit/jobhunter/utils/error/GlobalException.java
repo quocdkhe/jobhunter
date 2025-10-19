@@ -12,6 +12,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import vn.hoidanit.jobhunter.domain.RestResponse;
 
@@ -52,6 +53,15 @@ public class GlobalException {
         response.setError(exception.getMessage());
         response.setMessage("Email đã tồn tại, vui lòng nhập email khác");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<RestResponse<Object>> userNotFoundException(NoResourceFoundException exception) {
+        RestResponse<Object> response = new RestResponse<Object>();
+        response.setStatusCode(HttpStatus.NOT_FOUND.value());
+        response.setError(exception.getMessage());
+        response.setMessage("Không tìm thấy tài nguyên");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
 
 }

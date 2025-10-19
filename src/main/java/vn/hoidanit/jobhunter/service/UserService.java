@@ -1,12 +1,16 @@
 package vn.hoidanit.jobhunter.service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import vn.hoidanit.jobhunter.domain.User;
 import vn.hoidanit.jobhunter.domain.dto.Meta;
@@ -33,20 +37,34 @@ public class UserService {
         User newUser = this.userRepository.save(user);
         return new UserInfoDTO(newUser.getId(), newUser.getName(), newUser.getEmail(), newUser.getGender(),
                 newUser.getAddress(),
-                newUser.getAge(), newUser.getCreatedAt());
+                newUser.getAge(), newUser.getCreatedAt(), newUser.getUpdatedAt());
     }
 
-    public User updateUser(User user) {
+    public UserInfoDTO updateUser(User user) throws NoResourceFoundException {
+        Optional<User> currentUserOptional = userRepository.findById(user.getId());
+        if (!currentUserOptional.isPresent()) {
+            throw new NoResourceFoundException(HttpMethod.GET, "user with id: " + user.getId());
+        }
+
+        User currentUser = currentUserOptional.get();
         if (user.getPassword() != null && !user.getPassword().isEmpty()) {
             String encodedPassword = passwordEncoder.encode(user.getPassword());
             user.setPassword(encodedPassword);
         }
-        return this.userRepository.save(user);
+        currentUser.setAddress(user.getAddress());
+        currentUser.setAge(user.getAge());
+        currentUser.setName(user.getName());
+        currentUser.setGender(user.getGender());
+
+        User updatedUser = this.userRepository.save(currentUser);
+        return new UserInfoDTO(
+                updatedUser.getId(), updatedUser.getName(), updatedUser.getEmail(), updatedUser.getGender(),
+                updatedUser.getAddress(), updatedUser.getAge(), updatedUser.getCreatedAt(), updatedUser.getUpdatedAt());
     }
 
-    public ResultPaginationDTO getAllUsers(Pageable pageable, Specification<User> userSpec) {
+    public ResultPaginationDTO<List<UserInfoDTO>> getAllUsers(Pageable pageable, Specification<User> userSpec) {
         Page<User> usersPagable = userRepository.findAll(userSpec, pageable);
-        ResultPaginationDTO result = new ResultPaginationDTO();
+        ResultPaginationDTO<List<UserInfoDTO>> result = new ResultPaginationDTO<>();
         Meta meta = new Meta();
 
         meta.setPage(pageable.getPageNumber() + 1); // current Page
@@ -56,14 +74,25 @@ public class UserService {
         meta.setTotal(usersPagable.getTotalElements()); // total element
 
         result.setMeta(meta);
-        result.setResult(usersPagable.getContent());
 
+        List<UserInfoDTO> userInfos = usersPagable.getContent().stream()
+                .map(current -> new UserInfoDTO(current.getId(), current.getName(), current.getEmail(),
+                        current.getGender(),
+                        current.getAddress(), current.getAge(), current.getCreatedAt(), current.getUpdatedAt()))
+                .collect(Collectors.toList());
+        result.setResult(userInfos);
         return result;
     }
 
-    public User getById(long id) {
+    public UserInfoDTO getById(long id) throws NoResourceFoundException {
         Optional<User> userOptional = this.userRepository.findById(id);
-        return userOptional.isPresent() ? userOptional.get() : null;
+        if (!userOptional.isPresent()) {
+            throw new NoResourceFoundException(HttpMethod.GET, "user with id: " + id);
+        }
+        User current = userOptional.get();
+        return new UserInfoDTO(
+                current.getId(), current.getName(), current.getEmail(), current.getGender(),
+                current.getAddress(), current.getAge(), current.getCreatedAt(), current.getUpdatedAt());
     }
 
     public boolean checkUserById(long id) {

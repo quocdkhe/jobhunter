@@ -1,6 +1,7 @@
 package vn.hoidanit.jobhunter.controller;
 
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import com.turkraft.springfilter.boot.Filter;
 
@@ -12,9 +13,7 @@ import vn.hoidanit.jobhunter.utils.annotation.ApiMessage;
 import vn.hoidanit.jobhunter.utils.error.EmailExistException;
 
 import java.util.List;
-import java.util.Optional;
 
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
@@ -39,7 +38,7 @@ public class UserController {
 
     @GetMapping("/users")
     @ApiMessage("Get all users")
-    public ResponseEntity<ResultPaginationDTO> getAllUser(
+    public ResponseEntity<ResultPaginationDTO<List<UserInfoDTO>>> getAllUser(
             @Filter Specification<User> userSpec,
             Pageable pageable) {
         return ResponseEntity.ok().body(userService.getAllUsers(pageable, userSpec));
@@ -47,7 +46,7 @@ public class UserController {
 
     @GetMapping("/users/{id}")
     @ApiMessage("Get user by id")
-    public ResponseEntity<User> getUserById(@PathVariable("id") long id) {
+    public ResponseEntity<UserInfoDTO> getUserById(@PathVariable("id") long id) throws NoResourceFoundException {
         return ResponseEntity.ok().body(userService.getById(id));
     }
 
@@ -63,16 +62,10 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("/users/")
+    @PutMapping("/users")
     @ApiMessage("Update a user's info")
-    public ResponseEntity<User> updateUserById(@RequestBody User user) {
-        User currentUser = userService.getById(user.getId());
-        if (currentUser == null)
-            return null;
-        currentUser.setEmail(user.getEmail());
-        currentUser.setName(user.getName());
-        currentUser.setPassword(user.getPassword());
-        return ResponseEntity.status(HttpStatus.CREATED).body(userService.updateUser(currentUser));
+    public ResponseEntity<UserInfoDTO> updateUserById(@RequestBody User user) throws NoResourceFoundException {
+        return ResponseEntity.ok().body(userService.updateUser(user));
     }
 
 }
